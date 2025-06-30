@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"time"
 )
@@ -46,8 +47,7 @@ const (
 func main() {
 	tcpListener, err := net.Listen("tcp", port)
 	if err != nil {
-		fmt.Printf("Failed to start server on port %s: %v", port, err)
-		return
+		log.Fatalf("Failed to start server on port %s: %v", port, err)
 	}
 	defer tcpListener.Close()
 
@@ -62,7 +62,7 @@ func main() {
 	for {
 		conn, err := tcpListener.Accept()
 		if err != nil {
-			fmt.Printf("Error accepting connection: %v", err)
+			log.Printf("Error accepting connection: %v", err)
 			continue
 		}
 
@@ -116,6 +116,7 @@ func (client *Client) handleWrite() {
 			}
 
 			if _, err := client.conn.Write(message); err != nil {
+				log.Printf("Error writing to client %s: %v", client.id, err)
 				return
 			}
 		}
@@ -128,6 +129,7 @@ func (client *Client) handleRead(messages chan<- Message) {
 	for {
 		bytesRead, err := client.conn.Read(buffer)
 		if err != nil {
+			log.Printf("Client %s read error: %v", client.id, err)
 			return
 		}
 
@@ -152,14 +154,14 @@ func (app *App) listen() {
 		case event := <-app.events:
 			if event.event == Register {
 				app.clients[event.client.id] = event.client
-				fmt.Println("Client registered")
+				log.Printf("Client registered: %s", event.client.id)
 			}
 
 			if event.event == Unregister {
 				if _, ok := app.clients[event.client.id]; ok {
 					delete(app.clients, event.client.id)
 					close(event.client.messages)
-					fmt.Println("Client unregistered")
+					log.Printf("Client unregistered: %s", event.client.id)
 				}
 			}
 
