@@ -5,3 +5,5 @@
 /.builds/
 
 coverage.out
+
+.env
