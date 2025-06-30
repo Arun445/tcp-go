@@ -143,7 +143,6 @@ func (client *Client) handleRead(messages chan<- Message) {
 		}
 
 		messages <- Message{client: client, body: buffer[:bytesRead]}
-
 	}
 }
 
