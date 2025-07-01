@@ -3,3 +3,6 @@ build:
 
 run:
 	go run ./cmd/tcp
+
+test:
+	go test ./...

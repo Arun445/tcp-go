@@ -50,6 +50,8 @@ func (session *Session) HandleRead(messages chan<- message.Message, limit int) {
 			return
 		}
 
-		messages <- message.Message{SessionID: session.ID, Body: buffer[:bytesRead]}
+		copied := make([]byte, bytesRead)
+		copy(copied, buffer[:bytesRead])
+		messages <- message.Message{SessionID: session.ID, Body: copied}
 	}
 }
